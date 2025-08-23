@@ -1,0 +1,9 @@
+crewai[tools]
+streamlit
+crewai
+<<<<<<< HEAD
+langchain
+=======
+streamlit
+>>>>>>> 8ab6b3ee1da55ae5f9cf65746f13889fe911bbb6
+chromadb==0.3.29
