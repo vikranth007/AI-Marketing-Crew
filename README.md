@@ -1,5 +1,4 @@
 # AI-Marketing-Crew 🤖📈✍️
-![Project Screenshot](ai.png)
 
 An AI-powered, agentic marketing team built with CrewAI. 🚀
 
@@ -98,6 +97,7 @@ Then open in your browser: **http://localhost:8501** 🌐
 ## 📜 License
 
 Distributed under the MIT License. See `LICENSE` for details.📄
+
 
 
 
