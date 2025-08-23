@@ -1,39 +1,44 @@
 from typing import List
+import os
 from crewai import Agent, Crew, Process, Task, LLM
 from crewai.project import CrewBase, agent, crew, task
-
 from crewai_tools import SerperDevTool, ScrapeWebsiteTool, DirectoryReadTool, FileWriterTool, FileReadTool
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 
-_ = load_dotenv()
-llm = LLM(
-    model="gemini/gemini-2.0-flash",
-    temperature=0.7,
-)
+load_dotenv()
 
+def _maybe_serper():
+    """Attach Serper tool only if key exists to avoid 403."""
+    return [SerperDevTool()] if os.getenv("SERPER_API_KEY") else []
 
 class Content(BaseModel):
-    content_type: str = Field(...,
-                              description="The type of content to be created (e.g., blog post, social media post, video)")
-    topic: str = Field(..., description="The topic of the content")
-    target_audience: str = Field(..., description="The target audience for the content")
-    tags: List[str] = Field(..., description="Tags to be used for the content")
-    content: str = Field(..., description="The content itself")
-
+    content_type: str = Field(..., description="Type (blog post, social post, video)")
+    topic: str = Field(..., description="Topic")
+    target_audience: str = Field(..., description="Audience")
+    tags: List[str] = Field(..., description="Tags")
+    content: str = Field(..., description="The content body")
 
 @CrewBase
 class TheMarketingCrew():
-    "The marketing crew is responsible for creating and executing marketing strategies, content creation, and managing marketing campaigns."
+    """The marketing crew is responsible for creating and executing marketing strategies,
+    content creation, and managing marketing campaigns."""
     agents_config = 'config/agents.yaml'
     tasks_config = 'config/tasks.yaml'
+
+    def __init__(self, gemini_key: str | None = None):
+        super().__init__()
+        self.llm = LLM(
+            model="gemini/gemini-2.0-flash",
+            api_key=gemini_key or os.getenv("GEMINI_API_KEY"),
+            temperature=0.7,
+        )
 
     @agent
     def head_of_marketing(self) -> Agent:
         return Agent(
             config=self.agents_config['head_of_marketing'],
-            tools=[
-                SerperDevTool(),
+            tools=_maybe_serper() + [
                 ScrapeWebsiteTool(),
                 DirectoryReadTool('resources/drafts'),
                 FileWriterTool(),
@@ -41,7 +46,7 @@ class TheMarketingCrew():
             ],
             reasoning=True,
             inject_date=True,
-            llm=llm,
+            llm=self.llm,
             allow_delegation=True,
             max_rpm=3
         )
@@ -50,15 +55,14 @@ class TheMarketingCrew():
     def content_creator_social_media(self) -> Agent:
         return Agent(
             config=self.agents_config['content_creator_social_media'],
-            tools=[
-                SerperDevTool(),
+            tools=_maybe_serper() + [
                 ScrapeWebsiteTool(),
                 DirectoryReadTool('resources/drafts'),
                 FileWriterTool(),
                 FileReadTool()
             ],
             inject_date=True,
-            llm=llm,
+            llm=self.llm,
             allow_delegation=True,
             max_iter=30,
             max_rpm=3
@@ -68,15 +72,14 @@ class TheMarketingCrew():
     def content_writer_blogs(self) -> Agent:
         return Agent(
             config=self.agents_config['content_writer_blogs'],
-            tools=[
-                SerperDevTool(),
+            tools=_maybe_serper() + [
                 ScrapeWebsiteTool(),
                 DirectoryReadTool('resources/drafts/blogs'),
                 FileWriterTool(),
                 FileReadTool()
             ],
             inject_date=True,
-            llm=llm,
+            llm=self.llm,
             allow_delegation=True,
             max_iter=5,
             max_rpm=3
@@ -86,15 +89,14 @@ class TheMarketingCrew():
     def seo_specialist(self) -> Agent:
         return Agent(
             config=self.agents_config['seo_specialist'],
-            tools=[
-                SerperDevTool(),
+            tools=_maybe_serper() + [
                 ScrapeWebsiteTool(),
                 DirectoryReadTool('resources/drafts'),
                 FileWriterTool(),
                 FileReadTool()
             ],
             inject_date=True,
-            llm=llm,
+            llm=self.llm,
             allow_delegation=True,
             max_iter=3,
             max_rpm=3
@@ -118,14 +120,15 @@ class TheMarketingCrew():
     def create_content_calendar(self) -> Task:
         return Task(
             config=self.tasks_config['create_content_calendar'],
-            agent=self.content_writer_social_media()
+            agent=self.content_creator_social_media()   # <-- name matches
         )
 
     @task
     def prepare_post_drafts(self) -> Task:
         return Task(
             config=self.tasks_config['prepare_post_drafts'],
-            agent=self.content_writer_social_media(),
+            agent=self.content_creator_social_media(),
+            # consider removing output_json until stable
             output_json=Content
         )
 
@@ -133,7 +136,7 @@ class TheMarketingCrew():
     def prepare_scripts_for_reels(self) -> Task:
         return Task(
             config=self.tasks_config['prepare_scripts_for_reels'],
-            agent=self.content_writer_social_media(),
+            agent=self.content_creator_social_media(),
             output_json=Content
         )
 
@@ -162,28 +165,12 @@ class TheMarketingCrew():
 
     @crew
     def marketingcrew(self) -> Crew:
-        """Creates the Marketing crew"""
         return Crew(
             agents=self.agents,
             tasks=self.tasks,
             process=Process.sequential,
             verbose=True,
             planning=True,
-            planning_llm=llm,
+            planning_llm=self.llm,
             max_rpm=3
         )
-
-
-if __name__ == "__main__":
-    from datetime import datetime
-
-    inputs = {
-        "product_name": "AI Powered Excel Automation Tool",
-        "target_audience": "Small and Medium Enterprises (SMEs)",
-        "product_description": "A tool that automates repetitive tasks in Excel using AI, saving time and reducing errors.",
-        "budget": "Rs. 50,000",
-        "current_date": datetime.now().strftime("%Y-%m-%d"),
-    }
-    crew = TheMarketingCrew()
-    crew.marketingcrew().kickoff(inputs=inputs)
-    print("Marketing crew has been successfully created and run.")

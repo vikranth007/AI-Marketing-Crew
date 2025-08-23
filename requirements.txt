@@ -1,5 +1,0 @@
-crewai[tools]
-streamlit
-crewai
-langchain
-chromadb==0.3.29
