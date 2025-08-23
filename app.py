@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 from datetime import datetime
-from crew import TheMarketingCrew  # <-- FIXED import
+from crew import TheMarketingCrew  
 
 st.set_page_config(page_title="AI Marketing Crew", layout="wide")
 st.set_option('client.showErrorDetails', True)
