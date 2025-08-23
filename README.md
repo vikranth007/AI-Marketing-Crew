@@ -2,7 +2,7 @@
 
 An AI-powered, agentic marketing team built with CrewAI. 🚀
 
-This Crew includes agents with roles like Head of Marketing 👩‍💼, Content Creator 🎨, Content Writer 📝, and SEO Specialist 🔍. They are capable of handling tasks such as market research, content drafting, SEO optimization, and strategy framing—all orchestrated within a Streamlit interface or standalone script. 🖥️✨
+This Crew includes agents with roles like **Head of Marketing 👩‍💼**, **Content Creator 🎨**, **Content Writer 📝**, and **SEO Specialist 🔍**. They are capable of handling tasks such as market research,content drafting, SEO optimization, and strategy framing—all orchestrated within a Streamlit interface or standalone script. 🖥️✨
 
 
 
@@ -61,7 +61,8 @@ This Crew includes agents with roles like Head of Marketing 👩‍💼, Content
   **Run Through Streamlit UI**
     
       streamlit run app.py
-**Then open in your browser: **http://localhost:8501** 🌐
+      
+Then open in your browser: **http://localhost:8501** 🌐
 
   You’ll see input fields for:
 
@@ -96,4 +97,5 @@ This Crew includes agents with roles like Head of Marketing 👩‍💼, Content
 ## 📜 License
 
 Distributed under the MIT License. See `LICENSE` for details.📄
+
 
