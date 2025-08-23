@@ -6,7 +6,7 @@ from crew import TheMarketingCrew
 st.set_page_config(page_title="AI Marketing Crew", layout="wide")
 st.set_option('client.showErrorDetails', True)
 
-st.title("🤖 AI Marketing Crew (CrewAI + Streamlit)")
+st.title("🤖 AI Marketing Crew (CrewAI + Streamlit)")   
 
 # --- Manual Gemini API Key Input ---
 gemini_key = st.text_input("🔑 Enter your Gemini API Key:", type="password")
