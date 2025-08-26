@@ -1,3 +1,11 @@
+<div align="center">
+  <img src="https://raw.githubusercontent.com/vikranth007/AI-Marketing-Crew/edit/main/image.png" alt="RecruitX Banner" width="100%"/>
+  <h1 style="font-weight: bold; margin-top: 20px; font-size: 64px; text-shadow: 4px 4px 20px #007BFF;">
+   AI-Marketing-Crew
+  </div>
+
+
+
 # AI-Marketing-Crew 🤖📈✍️
 
 An AI-powered, agentic marketing team built with CrewAI. 🚀
@@ -97,6 +105,7 @@ Then open in your browser: **http://localhost:8501** 🌐
 ## 📜 License
 
 Distributed under the MIT License. See `LICENSE` for details.📄
+
 
 
 
